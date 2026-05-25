@@ -2,6 +2,7 @@ package com.nico.taskmanager.controller;
 
 import com.nico.taskmanager.model.Task;
 import com.nico.taskmanager.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -24,22 +25,19 @@ public class TaskController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTaskById(@PathVariable Long id){
-        return taskService.getTaskById(id)
-                .map(task -> ResponseEntity.ok(task))
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(taskService.getTaskById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task){
+    public ResponseEntity<Task> createTask(@RequestBody @Valid Task task){
         Task created = taskService.createTask(task);
         return ResponseEntity.status(201).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task){
-        return taskService.updateTask(id, task)
-                .map(updated -> ResponseEntity.ok(updated))
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody @Valid Task task){
+        Task updated = taskService.updateTask(id, task);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")

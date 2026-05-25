@@ -1,5 +1,6 @@
 package com.nico.taskmanager.service;
 
+import com.nico.taskmanager.exception.TaskNotFoundException;
 import com.nico.taskmanager.model.Task;
 import com.nico.taskmanager.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
-    public Optional<Task> getTaskById(Long id){
-        return taskRepository.findById(id);
+    public Task getTaskById(Long id){
+        return taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
     }
 
     public Task createTask(Task task){
@@ -27,23 +28,18 @@ public class TaskService {
     }
 
     public void deleteTask(Long id){
+        taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
         taskRepository.deleteById(id);
     }
 
-    public Optional<Task> updateTask(Long id, Task updatedTask){
-        Optional<Task> tempTask = taskRepository.findById(id);
-        if(!tempTask.isEmpty()){
-            Task task = tempTask.get();
-            task.setTitle(updatedTask.getTitle());
-            task.setDescription(updatedTask.getDescription());
-            task.setStatus(updatedTask.getStatus());
-            Task saved = taskRepository.save(task);
-            return Optional.of(saved);
-        }else{
-            return Optional.empty();
-        }
+    public Task updateTask(Long id, Task updatedTask){
+        Task tempTask = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
 
+        tempTask.setTitle(updatedTask.getTitle());
+        tempTask.setDescription(updatedTask.getDescription());
+        tempTask.setStatus(updatedTask.getStatus());
 
+        return taskRepository.save(tempTask);
 
     }
 }
