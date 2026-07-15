@@ -1,3 +1,5 @@
+![CI](https://github.com/nicolas-scalerandi/taskmanager/actions/workflows/ci.yml/badge.svg)
+
 # TaskManager API
 
 REST API construida con Spring Boot 3, Spring Data JPA y PostgreSQL.
