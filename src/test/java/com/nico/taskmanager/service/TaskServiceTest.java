@@ -3,6 +3,7 @@ package com.nico.taskmanager.service;
 import com.nico.taskmanager.exception.TaskNotFoundException;
 import com.nico.taskmanager.model.Task;
 import com.nico.taskmanager.model.TaskStatus;
+import com.nico.taskmanager.model.User;
 import com.nico.taskmanager.repository.TaskRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,6 +61,10 @@ class TaskServiceTest {
 
         // 1. ARRANGE — preparar los datos y el comportamiento del mock
 
+        User usuarioFalso = new User();
+        usuarioFalso.setId(1L);
+        usuarioFalso.setEmail("test@test.com");
+
         Task tareaDeEntrada = new Task();
         tareaDeEntrada.setTitle("Test Guardar Tarea");
         tareaDeEntrada.setStatus(TaskStatus.PENDING);
@@ -76,7 +81,7 @@ class TaskServiceTest {
 
         // 2. ACT — llamar al método real que quieres testear
 
-        Task resultado = taskService.createTask(tareaDeEntrada);
+        Task resultado = taskService.createTask(tareaDeEntrada, usuarioFalso);
 
 
         // 3. ASSERT — comprobar que el resultado es el esperado

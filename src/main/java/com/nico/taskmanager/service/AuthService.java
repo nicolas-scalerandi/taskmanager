@@ -1,5 +1,6 @@
 package com.nico.taskmanager.service;
 
+import com.nico.taskmanager.exception.InvalidCredentialsException;
 import com.nico.taskmanager.model.AuthRequest;
 import com.nico.taskmanager.model.User;
 import com.nico.taskmanager.repository.UserRepository;
@@ -29,10 +30,10 @@ public class AuthService {
 
     public String login(AuthRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new InvalidCredentialsException("Invalid email or password");
         }
 
         return jwtService.generateToken(user.getEmail());

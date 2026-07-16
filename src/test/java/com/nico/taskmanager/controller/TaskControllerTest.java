@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nico.taskmanager.exception.TaskNotFoundException;
 import com.nico.taskmanager.model.Task;
 import com.nico.taskmanager.model.TaskStatus;
+import com.nico.taskmanager.model.User;
 import com.nico.taskmanager.service.JwtService;
 import com.nico.taskmanager.service.TaskService;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -47,7 +49,9 @@ class TaskControllerTest {
     @Test
     void getAllTasks_deberiaDevolverListaDeTareas() throws Exception {
 
-        // 1. ARRANGE — preparamos las tareas falsas y el comportamiento del mock
+        User usuarioFalso = new User();
+        usuarioFalso.setId(1L);
+        usuarioFalso.setEmail("test@test.com");
 
         Task tarea1 = new Task();
         tarea1.setId(1L);
@@ -59,11 +63,9 @@ class TaskControllerTest {
         tarea2.setTitle("Tarea dos");
         tarea2.setStatus(TaskStatus.DONE);
 
-        when(taskService.getAllTasks()).thenReturn(List.of(tarea1, tarea2));
+        when(taskService.getTaskByUser(any(User.class))).thenReturn(List.of(tarea1, tarea2));
 
-        // 2. ACT + ASSERT — simulamos la petición HTTP y comprobamos la respuesta
-
-        mockMvc.perform(get("/api/tasks"))
+        mockMvc.perform(get("/api/tasks").with(user(usuarioFalso)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].title").value("Tarea uno"))
@@ -101,25 +103,24 @@ class TaskControllerTest {
     @Test
     void createTask_deberiaCrearTarea() throws Exception {
 
-        // 1. ARRANGE
+        User usuarioFalso = new User();
+        usuarioFalso.setId(1L);
+        usuarioFalso.setEmail("test@test.com");
 
         Task tareaAEnviar = new Task();
         tareaAEnviar.setTitle("Nueva tarea");
         tareaAEnviar.setStatus(TaskStatus.PENDING);
-        // sin id — así llegaría del cliente, antes de guardarse
 
         Task tareaCreada = new Task();
         tareaCreada.setId(10L);
         tareaCreada.setTitle("Nueva tarea");
         tareaCreada.setStatus(TaskStatus.PENDING);
-        // con id — lo que "devolvería" el service tras guardar
 
-        when(taskService.createTask(any(Task.class))).thenReturn(tareaCreada);
-
-        // 2. ACT + ASSERT
+        when(taskService.createTask(any(Task.class), any(User.class))).thenReturn(tareaCreada);
 
         mockMvc.perform(post("/api/tasks")
                         .with(csrf())
+                        .with(user(usuarioFalso))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tareaAEnviar)))
                 .andExpect(status().isCreated())

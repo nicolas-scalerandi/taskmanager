@@ -1,10 +1,12 @@
 package com.nico.taskmanager.controller;
 
 import com.nico.taskmanager.model.Task;
+import com.nico.taskmanager.model.User;
 import com.nico.taskmanager.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,9 +20,14 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-    @GetMapping
+    /*@GetMapping
     public ResponseEntity<List<Task>> getAllTasks(){
         return ResponseEntity.ok(taskService.getAllTasks());
+    }*/
+
+    @GetMapping
+    public ResponseEntity<List<Task>> getAllTasks(@AuthenticationPrincipal User user){
+        return ResponseEntity.ok(taskService.getTaskByUser(user));
     }
 
     @GetMapping("/{id}")
@@ -29,8 +36,8 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody @Valid Task task){
-        Task created = taskService.createTask(task);
+    public ResponseEntity<Task> createTask(@RequestBody @Valid Task task, @AuthenticationPrincipal User user){
+        Task created = taskService.createTask(task, user);
         return ResponseEntity.status(201).body(created);
     }
 

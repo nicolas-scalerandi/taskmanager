@@ -2,6 +2,7 @@ package com.nico.taskmanager.service;
 
 import com.nico.taskmanager.exception.TaskNotFoundException;
 import com.nico.taskmanager.model.Task;
+import com.nico.taskmanager.model.User;
 import com.nico.taskmanager.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,12 @@ public class TaskService {
         return taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(id));
     }
 
-    public Task createTask(Task task){
+    public List<Task> getTaskByUser(User user){
+        return taskRepository.findByUser(user);
+    }
+
+    public Task createTask(Task task, User user){
+        task.setUser(user);
         return taskRepository.save(task);
     }
 

@@ -35,4 +35,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(400).body(error);
     }
 
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(InvalidCredentialsException ex){
+        ErrorResponse error = new ErrorResponse(401, ex.getMessage());
+        return ResponseEntity.status(401).body(error);
+    }
+
 }
