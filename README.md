@@ -91,6 +91,9 @@ CI ejecuta la suite completa en cada push a `main` (ver badge arriba).
 ### Swagger / OpenAPI
 Documentación interactiva generada automáticamente con Springdoc, disponible en `/swagger-ui.html` (o `/swagger-ui/index.html`). Incluye botón **Authorize** para probar los endpoints protegidos pegando el token JWT una sola vez.
 
+### DTOs (Request/Response)
+Los endpoints de `Task` no exponen la entidad JPA directamente. `TaskRequest` define lo que el cliente puede enviar (title, description, status) y `TaskResponse` define lo que la API devuelve (sin datos del usuario ni contraseña). Esto mantiene los ejemplos de Swagger limpios y evita filtrar información sensible en las respuestas.
+
 ### Docker
 - **Dockerfile**: build multistage (compila con Maven+JDK en una etapa, corre solo con JRE en la etapa final para una imagen liviana)
 - **docker-compose.yml**: levanta la app y PostgreSQL juntos con un solo comando
