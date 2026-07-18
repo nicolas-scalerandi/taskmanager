@@ -2,6 +2,8 @@
 
 # TaskManager API
 
+*[Read in English](README.en.md)*
+
 REST API construida con Spring Boot 3, Spring Data JPA y PostgreSQL.
 Proyecto para aprender Spring Boot.
 
